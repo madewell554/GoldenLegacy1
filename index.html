@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Talk to our agent</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 60px 20px; }
+    button { font-size: 18px; padding: 14px 28px; border: 0; border-radius: 8px;
+             background: #111; color: #fff; cursor: pointer; }
+    #status { margin-top: 20px; color: #555; }
+  </style>
+</head>
+<body>
+  <h1>Talk to our agent</h1>
+  <button id="talk">Start call</button>
+  <p id="status"></p>
+
+  <script type="module">
+    import Vapi from "https://esm.sh/@vapi-ai/web";
+
+    const vapi = new Vapi("51da09e7-8338-4fcc-978e-a144f55d785b");
+    const ASSISTANT_ID = "b6e491bc-7572-45da-8f47-7c0078e8b1b5";
+    const btn = document.getElementById("talk");
+    const status = document.getElementById("status");
+    let active = false;
+
+    btn.onclick = () => (active ? vapi.stop() : vapi.start(ASSISTANT_ID));
+
+    vapi.on("call-start", () => {
+      active = true;
+      btn.textContent = "End call";
+      status.textContent = "Connected. Start talking.";
+    });
+    vapi.on("call-end", () => {
+      active = false;
+      btn.textContent = "Start call";
+      status.textContent = "Call ended.";
+    });
+    vapi.on("error", (e) => {
+      console.error(e);
+      status.textContent = "Something went wrong.";
+    });
+  </script>
+</body>
+</html>
